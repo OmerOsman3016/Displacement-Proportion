@@ -142,6 +142,17 @@
       background: transparent !important;
       border: none !important;
     }
+    
+    /* Layer control styling */
+    .leaflet-control-layers {
+      border-radius: 5px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    
+    .leaflet-control-layers-toggle {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>') !important;
+      background-size: 60%;
+    }
   </style>
 </head>
 <body>
@@ -153,9 +164,27 @@
   <script>
     // Initialize the map
     const map5 = L.map('map5').setView([16, 30], L.Browser.mobile ? 3 : 5.5);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    
+    // Base layers
+    const cartoDBLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap'
-    }).addTo(map5);
+    });
+    
+    const mapboxCustom1 = L.tileLayer('https://api.mapbox.com/styles/v1/omerosman/cm8oy6is4006101si7ll3bs4h/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoib21lcm9zbWFuIiwiYSI6ImUxZDBkODBlNjQxMDE2M2Y3OTQ3MWIwNTJkMjgzZTI3In0.ekCHuxRflTOO0RpQ6rQR7Q', {
+      attribution: '© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      tileSize: 512,
+      zoomOffset: -1,
+      maxZoom: 18
+    });
+    
+    // Add default base layer
+    mapboxCustom1.addTo(map5);
+    
+    // Create base layers object for layer control
+    const baseLayers = {
+      "CartoDB Light": cartoDBLight,
+      "Mapbox Custom": mapboxCustom1
+    };
 
     // State data with coordinates (lat, lng), displaced, total population
     const stateData = [
@@ -366,6 +395,12 @@
       return div;
     };
     legend5.addTo(map5);
+    
+    // Add layer control to switch between base maps
+    L.control.layers(baseLayers, null, {
+      position: 'topright',
+      collapsed: false
+    }).addTo(map5);
   </script>
 </body>
 </html>
